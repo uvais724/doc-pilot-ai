@@ -92,7 +92,6 @@ onMounted(async () => {
     }
   })
   report.value = res.report
-  console.log('Evaluation report:', report.value);
   loading.value = false
 })
 </script>

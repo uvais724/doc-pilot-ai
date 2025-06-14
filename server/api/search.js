@@ -35,7 +35,8 @@ export default defineEventHandler(async (event) => {
         const filters = JSON.parse(cleansedResponse);
         console.log("Response from AI:", filters);
 
-        const rawPackages = await fetchNpmPackages(filters.category)
+        const searchTerm = [filters.category, filters.framework].filter(Boolean).join(" ");
+        const rawPackages = await fetchNpmPackages(searchTerm);
         const enrichedPackages = await enrichNpmPackages(rawPackages)
 
         const filteredPackages = enrichedPackages.filter(pkg => {
