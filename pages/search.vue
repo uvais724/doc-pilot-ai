@@ -4,12 +4,13 @@
       <input
         v-model="query"
         type="text"
-        placeholder="Search libraries or type a query..."
+        placeholder="Type a query to search libraries..."
         class="input input-bordered w-full text-lg"
       />
       <label class="label">
         <span class="label-text-alt text-gray-500">
-          Hint: For best results, try queries like <span class="font-mono">"React table pagination performance"</span> or <span class="font-mono">"Vue form validation lightweight"</span>.
+           Hint: For best results, try queries like <span class="font-mono">[Language] [use case] [features]</span>
+           <br>Example: <span class="font-mono">"Vue form validation lightweight"</span>
         </span>
       </label>
     </div>
