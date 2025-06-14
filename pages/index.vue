@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 const query = ref('')
 const results = ref([])
@@ -66,9 +66,19 @@ const searchLibraries = async () => {
   loading.value = true
   const res = await $fetch('/api/search', { method: 'POST', body: { query: query.value } })
   results.value = res.results || []
-  console.log('Search results:', results.value)
+  // Save state to sessionStorage
+  sessionStorage.setItem('searchQuery', query.value)
+  sessionStorage.setItem('searchResults', JSON.stringify(results.value))
   loading.value = false
 }
+
+onMounted(() => {
+  // Restore state from sessionStorage if available
+  const savedQuery = sessionStorage.getItem('searchQuery')
+  const savedResults = sessionStorage.getItem('searchResults')
+  if (savedQuery) query.value = savedQuery
+  if (savedResults) results.value = JSON.parse(savedResults)
+})
 
 const evaluateLibrary = async (lib) => {
   // Fetch npm metadata

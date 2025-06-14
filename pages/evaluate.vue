@@ -1,6 +1,9 @@
 <template>
   <div class="p-6 max-w-3xl mx-auto">
-    <h1 class="text-3xl font-extrabold mb-6 text-center text-primary">{{ libraryName }} Evaluation Report</h1>
+    <button @click="goBack" class="btn btn-outline btn-primary mb-6 flex items-center gap-2">
+      Back to Search
+    </button>
+    <h1 class="text-3xl font-extrabold mb-6 text-center text-primary">{{ libraryName }} Evaluation</h1>
     <div v-if="loading" class="flex justify-center my-12">
       <span class="loading loading-spinner loading-lg"></span>
     </div>
@@ -28,7 +31,7 @@
       </div>
       <!-- Evaluation Card -->
       <div v-if="report" class="card bg-base-100 shadow-xl p-8">
-        <h2 class="text-2xl font-bold mb-6 text-secondary">AI Evaluation</h2>
+        <h2 class="text-2xl font-bold mb-6 text-secondary">Evaluation Report</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div v-for="(item, key) in evaluationFields" :key="key" class="bg-base-200 rounded-xl p-5 flex flex-col gap-2 border border-base-300">
             <div class="flex items-center justify-between mb-2">
@@ -56,10 +59,11 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 
 const route = useRoute()
+const router = useRouter()
 const libraryName = route.query.name || 'Library'
 const metadata = route.query.metadata ? JSON.parse(route.query.metadata) : null
 const loading = ref(true)
@@ -71,6 +75,11 @@ const evaluationFields = {
   Community: { label: 'Community' },
   Usability: { label: 'Usability' },
   Security: { label: 'Security' }
+}
+
+const goBack = () => {
+  // Use router.back() to preserve state (history-based navigation)
+  router.back()
 }
 
 onMounted(async () => {
