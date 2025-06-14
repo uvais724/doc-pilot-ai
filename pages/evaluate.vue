@@ -1,7 +1,11 @@
 <template>
-  <div class="p-6 max-w-3xl mx-auto">
+  <div class="p-6 max-w-3xl mx-auto relative">
     <button @click="goBack" class="btn btn-outline btn-primary mb-6 flex items-center gap-2">
-      Back to Search
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <button @click="addToCompareFromEval" class="btn btn-outline btn-sm absolute top-6 right-6 flex items-center gap-2">
+      <span class="material-icons">add</span>
+      Add to Compare
     </button>
     <h1 class="text-3xl font-extrabold mb-6 text-center text-primary">{{ libraryName }} Evaluation</h1>
     <div v-if="loading" class="flex justify-center my-12">
@@ -9,23 +13,23 @@
     </div>
     <div v-else>
       <!-- Metadata Card -->
-      <div v-if="metadata" class="card bg-base-200 shadow mb-8 p-6">
+      <div v-if="metadata" class="card bg-base-200 shadow mb-8 p-6 overflow-x-auto">
         <h2 class="text-xl font-bold mb-2 text-secondary">Library Metadata</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div class="mb-1"><span class="font-semibold">Name:</span> {{ metadata.npm?.name }}</div>
-            <div class="mb-1"><span class="font-semibold">Version:</span> {{ metadata.npm?.version }}</div>
-            <div class="mb-1"><span class="font-semibold">Description:</span> {{ metadata.npm?.description }}</div>
-            <div class="mb-1"><span class="font-semibold">Weekly Downloads:</span> {{ metadata.npm?.weeklyDownloads?.toLocaleString() }}</div>
-            <div class="mb-1"><span class="font-semibold">Size:</span> {{ (metadata.npm?.size/1024).toFixed(1) }} KB</div>
-            <div class="mb-1"><span class="font-semibold">Last Publish:</span> {{ metadata.npm?.lastPublish ? new Date(metadata.npm.lastPublish).toLocaleDateString() : '-' }}</div>
+          <div class="break-words">
+            <div class="mb-1 break-words"><span class="font-semibold">Name:</span> {{ metadata.npm?.name }}</div>
+            <div class="mb-1 break-words"><span class="font-semibold">Version:</span> {{ metadata.npm?.version }}</div>
+            <div class="mb-1 break-words"><span class="font-semibold">Description:</span> {{ metadata.npm?.description }}</div>
+            <div class="mb-1 break-words"><span class="font-semibold">Weekly Downloads:</span> {{ metadata.npm?.weeklyDownloads?.toLocaleString() }}</div>
+            <div class="mb-1 break-words"><span class="font-semibold">Size:</span> {{ (metadata.npm?.size/1024).toFixed(1) }} KB</div>
+            <div class="mb-1 break-words"><span class="font-semibold">Last Publish:</span> {{ metadata.npm?.lastPublish ? new Date(metadata.npm.lastPublish).toLocaleDateString() : '-' }}</div>
           </div>
-          <div>
-            <div class="mb-1"><span class="font-semibold">GitHub Stars:</span> {{ metadata.github?.stars }}</div>
-            <div class="mb-1"><span class="font-semibold">Open Issues:</span> {{ metadata.github?.issuesOpen }}</div>
-            <div class="mb-1"><span class="font-semibold">Last Commit:</span> {{ metadata.github?.lastCommit ? new Date(metadata.github.lastCommit).toLocaleDateString() : '-' }}</div>
-            <div class="mb-1"><span class="font-semibold">Repo:</span> <a :href="metadata.github?.repoUrl" class="link link-primary" target="_blank">{{ metadata.github?.repoUrl }}</a></div>
-            <div class="mb-1"><span class="font-semibold">Docs:</span> <a :href="metadata.github?.docs" class="link link-secondary" target="_blank">{{ metadata.github?.docs }}</a></div>
+          <div class="break-words">
+            <div class="mb-1 break-words"><span class="font-semibold">GitHub Stars:</span> {{ metadata.github?.stars }}</div>
+            <div class="mb-1 break-words"><span class="font-semibold">Open Issues:</span> {{ metadata.github?.issuesOpen }}</div>
+            <div class="mb-1 break-words"><span class="font-semibold">Last Commit:</span> {{ metadata.github?.lastCommit ? new Date(metadata.github?.lastCommit).toLocaleDateString() : '-' }}</div>
+            <div class="mb-1 break-words"><span class="font-semibold">Repo:</span> <a :href="metadata.github?.repoUrl" class="link link-primary break-all" target="_blank">{{ metadata.github?.repoUrl }}</a></div>
+            <div class="mb-1 break-words"><span class="font-semibold">Docs:</span> <a :href="metadata.github?.docs" class="link link-secondary break-all" target="_blank">{{ metadata.github?.docs }}</a></div>
           </div>
         </div>
       </div>
@@ -80,6 +84,14 @@ const evaluationFields = {
 const goBack = () => {
   // Use router.back() to preserve state (history-based navigation)
   router.back()
+}
+
+function addToCompareFromEval() {
+  if (metadata && metadata.npm) {
+    window.dispatchEvent(new CustomEvent('add-to-compare', { detail: { name: metadata.npm.name, ...metadata.npm, ...metadata.github } }))
+    // Open the widget if it's minimized
+    window.dispatchEvent(new CustomEvent('open-compare-widget'))
+  }
 }
 
 onMounted(async () => {

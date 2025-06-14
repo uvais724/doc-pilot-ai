@@ -25,12 +25,20 @@
             <h2 class="text-2xl font-bold text-primary">{{ lib.name }}</h2>
             <p class="text-gray-700 mb-2">{{ lib.description }}</p>
           </div>
-          <button
-            class="btn btn-secondary btn-sm ml-4"
-            @click="evaluateLibrary(lib)"
-          >
-            Evaluate
-          </button>
+          <div class="flex flex-col gap-2 items-end">
+            <button
+              class="btn btn-secondary btn-sm ml-4"
+              @click="evaluateLibrary(lib)"
+            >
+              Evaluate
+            </button>
+            <button
+              class="btn btn-outline btn-xs mt-1"
+              @click="addToCompare(lib)"
+            >
+              Add to Compare
+            </button>
+          </div>
         </div>
         <div class="mt-4 pt-2 border-t flex flex-wrap gap-4 text-sm text-gray-600">
           <div v-if="lib.weeklyDownloads">
@@ -61,6 +69,7 @@ const query = ref('')
 const results = ref([])
 const loading = ref(false)
 const router = useRouter()
+const compareWidgetRef = ref(null)
 
 const searchLibraries = async () => {
   loading.value = true
@@ -131,5 +140,13 @@ const evaluateLibrary = async (lib) => {
       metadata: JSON.stringify(metadata)
     }
   })
+}
+
+function addToCompare(lib) {
+  if (process.client) {
+    window.dispatchEvent(new CustomEvent('add-to-compare', { detail: lib }))
+    // Open the widget if it's minimized
+    window.dispatchEvent(new CustomEvent('open-compare-widget'))
+  }
 }
 </script>
