@@ -22,13 +22,13 @@
     <div v-if="results.length" class="grid gap-6">
       <div v-for="lib in results" :key="lib.name" class="card bg-base-100 shadow-xl p-6 border border-base-200">
         <div class="flex justify-between items-start">
-          <div>
-            <h2 class="text-2xl font-bold text-primary">{{ lib.name }}</h2>
-            <p class="text-gray-700 mb-2">{{ lib.description }}</p>
+          <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold text-primary truncate">{{ lib.name }}</h2>
+            <p class="text-gray-700 mb-2 whitespace-pre-line break-words">{{ lib.description }}</p>
           </div>
-          <div class="flex flex-col gap-2 items-end">
+          <div class="flex flex-col gap-2 items-end flex-shrink-0 ml-4">
             <button
-              class="btn btn-secondary btn-sm ml-4"
+              class="btn btn-secondary btn-sm"
               @click="evaluateLibrary(lib)"
               :disabled="evaluating"
             >

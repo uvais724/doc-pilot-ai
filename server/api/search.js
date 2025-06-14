@@ -37,7 +37,24 @@ export default defineEventHandler(async (event) => {
 
         const searchTerm = [filters.category, filters.framework].filter(Boolean).join(" ");
         const rawPackages = await fetchNpmPackages(searchTerm);
-        const enrichedPackages = await enrichNpmPackages(rawPackages)
+
+        // Filter out packages that do not match the detected language or framework
+        const filteredRawPackages = rawPackages.filter(pkg => {
+
+            // Check framework match (if specified)
+            let frameworkMatch = true;
+            if (filters.framework) {
+            console.log("Checking framework match for:", filters.framework);
+            console.log("Package keywords:", pkg.keywords);
+            console.log("Package name:", pkg.name);
+            frameworkMatch =
+                (pkg.keywords && pkg.keywords.some(k => k.toLowerCase() === filters.framework.toLowerCase())) ||
+                (pkg.name && pkg.name.toLowerCase().includes(filters.framework.toLowerCase()));
+            }
+
+            return frameworkMatch;
+        });
+        const enrichedPackages = await enrichNpmPackages(filteredRawPackages)
 
         const filteredPackages = enrichedPackages.filter(pkg => {
             const priorities = filters.priorities || []
