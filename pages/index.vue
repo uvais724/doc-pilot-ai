@@ -29,8 +29,10 @@
             <button
               class="btn btn-secondary btn-sm ml-4"
               @click="evaluateLibrary(lib)"
+              :disabled="evaluating"
             >
-              Evaluate
+              <span v-if="!evaluating">Evaluate</span>
+              <span v-else class="loading loading-spinner loading-xs"></span>
             </button>
             <button
               class="btn btn-outline btn-xs mt-1"
@@ -70,6 +72,7 @@ const results = ref([])
 const loading = ref(false)
 const router = useRouter()
 const compareWidgetRef = ref(null)
+const evaluating = ref(false)
 
 const searchLibraries = async () => {
   loading.value = true
@@ -90,6 +93,7 @@ onMounted(() => {
 })
 
 const evaluateLibrary = async (lib) => {
+  evaluating.value = true
   // Fetch npm metadata
   const npmRes = await fetch(`https://registry.npmjs.org/${lib.name}`)
   const npmData = await npmRes.json()
@@ -140,6 +144,7 @@ const evaluateLibrary = async (lib) => {
       metadata: JSON.stringify(metadata)
     }
   })
+  evaluating.value = false
 }
 
 function addToCompare(lib) {

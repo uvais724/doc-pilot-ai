@@ -8,6 +8,6 @@ export async function fetchNpmPackages(category) {
         description: pkg.package.description,
         version: pkg.package.version,
         link: pkg.package.links.npm,
-        publisher: pkg.package.publisher.username,
+        publisher: pkg.package.publisher?.username || "unknown",
     }))
 }
