@@ -13,6 +13,34 @@ export default defineEventHandler(async (event) => {
 }`;
 
   try {
+    if (compare && compare.length === 2 && compare[0].publisher && compare[0].link && compare[0].link.includes('pypi.org')) {
+      // PyPI comparison
+      const pypiA = await fetch(`https://pypi.org/pypi/${compare[0].name}/json`).then(r => r.json())
+      const pypiB = await fetch(`https://pypi.org/pypi/${compare[1].name}/json`).then(r => r.json())
+      compare[0].metadata = {
+        pypi: {
+          name: pypiA.info.name,
+          version: pypiA.info.version,
+          description: pypiA.info.summary,
+          author: pypiA.info.author,
+          home_page: pypiA.info.home_page,
+          license: pypiA.info.license,
+          last_release: pypiA.releases ? Object.keys(pypiA.releases).pop() : '',
+        }
+      }
+      compare[1].metadata = {
+        pypi: {
+          name: pypiB.info.name,
+          version: pypiB.info.version,
+          description: pypiB.info.summary,
+          author: pypiB.info.author,
+          home_page: pypiB.info.home_page,
+          license: pypiB.info.license,
+          last_release: pypiB.releases ? Object.keys(pypiB.releases).pop() : '',
+        }
+      }
+    }
+
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: prompt,

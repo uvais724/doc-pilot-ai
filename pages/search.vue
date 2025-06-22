@@ -95,47 +95,65 @@ onMounted(() => {
 
 const evaluateLibrary = async (lib) => {
   evaluating.value = true
-  // Fetch npm metadata
-  const npmRes = await fetch(`https://registry.npmjs.org/${lib.name}`)
-  const npmData = await npmRes.json()
-
-  // Try to extract GitHub repo info from npm metadata
-  let githubRepo = ''
-  if (npmData.repository && npmData.repository.url) {
-    // e.g. "git+https://github.com/owner/repo.git"
-    const match = npmData.repository.url.match(/github.com[:/](.+?)\.(git)?$/)
-    if (match && match[1]) {
-      githubRepo = match[1]
+  let metadata = {}
+  if (lib.publisher && lib.link && lib.link.includes('pypi.org')) {
+    // PyPI package
+    const pypiRes = await fetch(`https://pypi.org/pypi/${lib.name}/json`)
+    const pypiData = await pypiRes.json()
+    metadata = {
+      pypi: {
+        name: pypiData.info.name,
+        version: pypiData.info.version,
+        description: pypiData.info.summary,
+        author: pypiData.info.author,
+        home_page: pypiData.info.home_page,
+        license: pypiData.info.license,
+        last_release: pypiData.releases ? Object.keys(pypiData.releases).pop() : '',
+      }
     }
-  }
+  } else {
+    // Fetch npm metadata
+    const npmRes = await fetch(`https://registry.npmjs.org/${lib.name}`)
+    const npmData = await npmRes.json()
 
-  let githubMeta = {}
-  if (githubRepo) {
-    // Fetch GitHub repo metadata (stars, issues, last commit, etc.)
-    const repoRes = await fetch(`https://api.github.com/repos/${githubRepo}`)
-    const repoData = await repoRes.json()
-    const commitsRes = await fetch(`https://api.github.com/repos/${githubRepo}/commits?per_page=1`)
-    const commitsData = await commitsRes.json()
-    githubMeta = {
-      stars: repoData.stargazers_count,
-      issuesOpen: repoData.open_issues_count,
-      lastCommit: commitsData && commitsData[0] ? commitsData[0].commit.author.date : '',
-      repoUrl: repoData.html_url,
-      docs: npmData.homepage || repoData.homepage || '',
+    // Try to extract GitHub repo info from npm metadata
+    let githubRepo = ''
+    if (npmData.repository && npmData.repository.url) {
+      // e.g. "git+https://github.com/owner/repo.git"
+      const match = npmData.repository.url.match(/github.com[:/](.+?)\.(git)?$/)
+      if (match && match[1]) {
+        githubRepo = match[1]
+      }
     }
-  }
 
-  // Compose metadata for evaluation
-  const metadata = {
-    npm: {
-      name: npmData.name,
-      version: npmData['dist-tags']?.latest,
-      description: npmData.description,
-      weeklyDownloads: lib.weeklyDownloads,
-      size: lib.size,
-      lastPublish: npmData.time?.[npmData['dist-tags']?.latest],
-    },
-    github: githubMeta
+    let githubMeta = {}
+    if (githubRepo) {
+      // Fetch GitHub repo metadata (stars, issues, last commit, etc.)
+      const repoRes = await fetch(`https://api.github.com/repos/${githubRepo}`)
+      const repoData = await repoRes.json()
+      const commitsRes = await fetch(`https://api.github.com/repos/${githubRepo}/commits?per_page=1`)
+      const commitsData = await commitsRes.json()
+      githubMeta = {
+        stars: repoData.stargazers_count,
+        issuesOpen: repoData.open_issues_count,
+        lastCommit: commitsData && commitsData[0] ? commitsData[0].commit.author.date : '',
+        repoUrl: repoData.html_url,
+        docs: npmData.homepage || repoData.homepage || '',
+      }
+    }
+
+    // Compose metadata for evaluation
+    metadata = {
+      npm: {
+        name: npmData.name,
+        version: npmData['dist-tags']?.latest,
+        description: npmData.description,
+        weeklyDownloads: lib.weeklyDownloads,
+        size: lib.size,
+        lastPublish: npmData.time?.[npmData['dist-tags']?.latest],
+      },
+      github: githubMeta
+    }
   }
 
   router.push({

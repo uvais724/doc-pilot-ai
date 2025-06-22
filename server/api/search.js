@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { fetchPyPiPackages } from '../utils/fetchPyPiPackages.js'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -36,7 +37,12 @@ export default defineEventHandler(async (event) => {
         console.log("Response from AI:", filters);
 
         const searchTerm = [filters.category, filters.framework].filter(Boolean).join(" ");
-        const rawPackages = await fetchNpmPackages(searchTerm);
+        let rawPackages = []
+        if (filters.language && filters.language.toLowerCase() === 'python') {
+            rawPackages = await fetchPyPiPackages(filters.category)
+        } else {
+            rawPackages = await fetchNpmPackages(filters.category, filters.framework)
+        }
 
         // Filter out packages that do not match the detected language or framework
         const filteredRawPackages = rawPackages.filter(pkg => {

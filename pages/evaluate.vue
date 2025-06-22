@@ -94,6 +94,56 @@ function addToCompareFromEval() {
   }
 }
 
+const evaluateLibrary = async (lib) => {
+  evaluating.value = true
+  let metadata = {}
+  if (lib.publisher && lib.link && lib.link.includes('pypi.org')) {
+    // PyPI package
+    const pypiRes = await fetch(`https://pypi.org/pypi/${lib.name}/json`)
+    const pypiData = await pypiRes.json()
+    metadata = {
+      pypi: {
+        name: pypiData.info.name,
+        version: pypiData.info.version,
+        description: pypiData.info.summary,
+        author: pypiData.info.author,
+        home_page: pypiData.info.home_page,
+        license: pypiData.info.license,
+        last_release: pypiData.releases ? Object.keys(pypiData.releases).pop() : '',
+      }
+    }
+  } else {
+    // npm package
+    const npmRes = await fetch(`https://registry.npmjs.org/${lib.name}`)
+    const npmData = await npmRes.json()
+    metadata = {
+      npm: {
+        name: npmData.name,
+        version: npmData.version,
+        description: npmData.description,
+        weeklyDownloads: npmData.weeklyDownloads,
+        size: npmData.size,
+        lastPublish: npmData.time?.modified,
+      },
+      github: {
+        stars: lib.stars,
+        issuesOpen: lib.issuesOpen,
+        lastCommit: lib.lastCommit,
+        repoUrl: lib.repoUrl,
+        docs: lib.docs,
+      }
+    }
+  }
+  router.push({
+    path: '/evaluate',
+    query: {
+      name: lib.name,
+      metadata: JSON.stringify(metadata)
+    }
+  })
+  evaluating.value = false
+}
+
 onMounted(async () => {
   loading.value = true
   const res = await $fetch('/api/evaluate', {

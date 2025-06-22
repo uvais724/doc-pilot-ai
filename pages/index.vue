@@ -83,4 +83,53 @@
 
 <script setup>
 import { NuxtLink } from '#components'
+
+const evaluateLibrary = async (lib) => {
+  evaluating.value = true
+  let metadata = {}
+  if (lib.publisher && lib.link && lib.link.includes('pypi.org')) {
+    // PyPI package
+    const pypiRes = await fetch(`https://pypi.org/pypi/${lib.name}/json`)
+    const pypiData = await pypiRes.json()
+    metadata = {
+      pypi: {
+        name: pypiData.info.name,
+        version: pypiData.info.version,
+        description: pypiData.info.summary,
+        author: pypiData.info.author,
+        home_page: pypiData.info.home_page,
+        license: pypiData.info.license,
+        last_release: pypiData.releases ? Object.keys(pypiData.releases).pop() : '',
+      }
+    }
+  } else {
+    // npm/github logic
+    const npmRes = await fetch(`https://registry.npmjs.org/${lib.name}`)
+    const npmData = await npmRes.json()
+    metadata = {
+      npm: {
+        name: npmData.name,
+        version: npmData['dist-tags'].latest,
+        description: npmData.description,
+        homepage: npmData.homepage,
+        repository: npmData.repository.url,
+        license: npmData.license,
+        author: npmData.author.name,
+        maintainers: npmData.maintainers.map(m => m.name).join(', '),
+        stars: npmData.stars,
+        forks: npmData.forks,
+        issues: npmData.issues,
+        last_release: npmData.time[npmData['dist-tags'].latest],
+      }
+    }
+  }
+  router.push({
+    path: '/evaluate',
+    query: {
+      name: lib.name,
+      metadata: JSON.stringify(metadata)
+    }
+  })
+  evaluating.value = false
+}
 </script>
