@@ -51,6 +51,42 @@
       </div>
     </section>
 
+    <!-- Trust + Transparency Section -->
+    <section class="py-16 px-4 max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-6 text-center text-primary">Trust & Transparency</h2>
+      <div class="bg-base-200 rounded-lg p-6 shadow text-center">
+        <p class="text-lg text-gray-700 mb-4">
+          Our AI-powered evaluations are designed to be <span class="font-semibold text-secondary">unbiased</span> and <span class="font-semibold text-secondary">transparent</span>.
+          We use only official package metadata, documentation, and public repository data—never paid placements or hidden sponsorships.
+        </p>
+        <p class="text-gray-600">
+          Every comparison is generated using reproducible prompts and data, so you can trust that recommendations are based on facts, not opinions or ads.
+        </p>
+      </div>
+    </section>
+
+    <!-- Supported Languages Section -->
+    <section class="py-12 px-4 max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold mb-6 text-center text-secondary">Supported Languages</h2>
+      <div class="flex flex-wrap justify-center gap-8">
+        <div class="card bg-base-200 p-6 shadow flex flex-col items-center w-64">
+          <span class="material-icons text-4xl text-primary mb-2">code</span>
+          <h3 class="font-bold text-lg mb-2">JavaScript / TypeScript</h3>
+          <p class="text-gray-600">npm Registry</p>
+        </div>
+        <div class="card bg-base-200 p-6 shadow flex flex-col items-center w-64">
+          <span class="material-icons text-4xl text-primary mb-2">memory</span>
+          <h3 class="font-bold text-lg mb-2">Python</h3>
+          <p class="text-gray-600">PyPI Registry</p>
+        </div>
+        <!-- <div class="card bg-base-200 p-6 shadow flex flex-col items-center w-64">
+          <span class="material-icons text-4xl text-primary mb-2">coffee</span>
+          <h3 class="font-bold text-lg mb-2">Java</h3>
+          <p class="text-gray-600">Maven Central</p>
+        </div> -->
+      </div>
+    </section>
+
     <!-- FAQ Section -->
     <section class="py-16 px-4 max-w-3xl mx-auto">
       <h2 class="text-3xl font-bold mb-8 text-center text-secondary">Frequently Asked Questions</h2>
