@@ -34,11 +34,11 @@
         </div>
       </div>
       <!-- Evaluation Card -->
-      <div v-if="report" class="card bg-base-100 shadow-xl p-8">
+      <div v-if="report" class="card bg-base-100 shadow-xl p-8 overflow-x-auto">
         <h2 class="text-2xl font-bold mb-6 text-secondary">Evaluation Report</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div v-for="(item, key) in evaluationFields" :key="key" class="bg-base-200 rounded-xl p-5 flex flex-col gap-2 border border-base-300">
-            <div class="flex items-center justify-between mb-2">
+        <div class="flex flex-col gap-4">
+          <div v-for="(item, key) in evaluationFields" :key="key" class="bg-base-200 rounded-xl p-5 flex flex-col gap-2 border border-base-300 overflow-x-auto break-words">
+            <div class="flex items-center justify-between mb-1">
               <span class="font-semibold text-lg">{{ item.label }}</span>
               <span :class="['badge badge-lg text-lg',
                 report[key]?.score >= 4 ? 'badge-success' :
@@ -47,11 +47,11 @@
                 {{ report[key]?.score || '-' }}/5
               </span>
             </div>
-            <div class="text-gray-700 text-sm mb-1">
+            <div class="text-gray-700 text-sm mb-1 break-words">
               <span class="font-semibold">Reason:</span>
-              <span class="font-mono">{{ report[key]?.reason || 'No reason provided.' }}</span>
+              <span class="font-mono break-words">{{ report[key]?.reason || 'No reason provided.' }}</span>
             </div>
-            <div class="text-green-700 text-xs mt-1" v-if="report[key]?.suggestion">
+            <div class="text-green-700 text-xs mt-1 break-words" v-if="report[key]?.suggestion">
               <span class="font-semibold">Suggestion:</span> {{ report[key]?.suggestion || 'No suggestions provided.' }}
             </div>
           </div>
